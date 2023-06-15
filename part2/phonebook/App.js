@@ -42,35 +42,49 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
-    if (persons.some(person => person.name === newName)) alert(`${newName} is already added to phonebook`)
+    const person = { name: newName, number: newNumber }
+
+    if (persons.some(person => person.name.toLowerCase() === newName.toLowerCase())) {
+      if (window.confirm(`${newName} is already added to the phonebook. Replace the old number with a new one?`)) {
+        const id = persons.find(person => person.name.toLowerCase() === newName.toLowerCase()).id
+        personService.update(id, person)
+          .then(response => {
+            console.log(response)
+            const updatedList = persons.map(person => person.id !== id ? person : response.data)
+            setPersons(updatedList)
+            setPersonsToShow(updatedList)
+            setNewName('')
+            setNewNumber('')
+          })
+      }
+    }
 
     else {
-      const person = { name: newName, number: newNumber }
-
       personService.create(person)
         .then(response => {
           console.log(response)
-          setPersons(persons.concat(response.data))
-          setPersonsToShow(persons.concat(response.data))
+          const updatedList = persons.concat(response.data)
+          setPersons(updatedList)
+          setPersonsToShow(updatedList)
           setNewName('')
           setNewNumber('')
         })
     }
   }
 
-  
+
   const deletePerson = (id, name) => {
-    if(window.confirm(`Delete ${name}?`)){
+    if (window.confirm(`Delete ${name}?`)) {
       personService.remove(id)
-      .then(response => {
-        console.log(response)
-        const updatedList = persons.filter(person => person.id != id)
-        setPersons(updatedList)
-        setPersonsToShow(updatedList)
-      })
-      .catch(error => {
-        console.log('fail')
-      })
+        .then(response => {
+          console.log(response)
+          const updatedList = persons.filter(person => person.id != id)
+          setPersons(updatedList)
+          setPersonsToShow(updatedList)
+        })
+        .catch(error => {
+          console.log('fail')
+        })
     }
   }
 
@@ -88,7 +102,7 @@ const App = () => {
         handleNumberChange={handleNumberChange} />
 
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} deletePerson={deletePerson}/>
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson} />
 
     </div>
   )
