@@ -11,16 +11,18 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [personsToShow, setPersonsToShow] = useState([])
 
   useEffect(() => {
     personService.getAll()
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
+        setPersonsToShow(response.data)
       })
   }, [])
 
-  const personsToShow = persons.filter((person) => person.name.toLowerCase().includes(filter))
+
 
   const handleNameChange = (event) => {
     //console.log(event.target.value)
@@ -35,6 +37,7 @@ const App = () => {
   const handleFilterChange = (event) => {
     //console.log(event.target.value)
     setFilter(event.target.value)
+    setPersonsToShow(persons.filter((person) => person.name.toLowerCase().includes(event.target.value)))
   }
 
   const addName = (event) => {
@@ -43,12 +46,31 @@ const App = () => {
 
     else {
       const person = { name: newName, number: newNumber }
+
       personService.create(person)
         .then(response => {
           console.log(response)
-          setPersons(persons.concat(person))
+          setPersons(persons.concat(response.data))
+          setPersonsToShow(persons.concat(response.data))
           setNewName('')
+          setNewNumber('')
         })
+    }
+  }
+
+  
+  const deletePerson = (id, name) => {
+    if(window.confirm(`Delete ${name}?`)){
+      personService.remove(id)
+      .then(response => {
+        console.log(response)
+        const updatedList = persons.filter(person => person.id != id)
+        setPersons(updatedList)
+        setPersonsToShow(updatedList)
+      })
+      .catch(error => {
+        console.log('fail')
+      })
     }
   }
 
@@ -66,7 +88,7 @@ const App = () => {
         handleNumberChange={handleNumberChange} />
 
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson}/>
 
     </div>
   )
