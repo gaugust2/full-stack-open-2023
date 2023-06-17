@@ -3,7 +3,8 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personService from './services/personService'
-import axios from 'axios'
+import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,6 +13,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [personsToShow, setPersonsToShow] = useState([])
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService.getAll()
@@ -55,7 +57,12 @@ const App = () => {
             setPersonsToShow(updatedList)
             setNewName('')
             setNewNumber('')
+            setErrorMessage(`Updated ${person.name}`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
           })
+          .catch((error) => setErrorMessage(error))
       }
     }
 
@@ -68,7 +75,12 @@ const App = () => {
           setPersonsToShow(updatedList)
           setNewName('')
           setNewNumber('')
+          setErrorMessage(`Added ${person.name}`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
+        .catch((error) => setErrorMessage(error))
     }
   }
 
@@ -91,6 +103,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
       <h2>add a new</h2>
