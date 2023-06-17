@@ -93,9 +93,19 @@ const App = () => {
           const updatedList = persons.filter(person => person.id != id)
           setPersons(updatedList)
           setPersonsToShow(updatedList)
+          setErrorMessage(`Deleted ${name}`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
         .catch(error => {
-          console.log('fail')
+          setErrorMessage(`Information of ${name} has already been removed from server`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+          const updatedList = persons.filter(person => person.id != id)
+          setPersons(updatedList)
+          setPersonsToShow(updatedList)
         })
     }
   }
