@@ -1,29 +1,44 @@
+import { useState } from "react"
 import CountryData from "./CountryData"
 
-const Country = ({country}) => <div>{country.name.common}</div>
+const Country = ({ country }) => {
+    const [showSingular, setShowSingular] = useState(false)
 
-const Countries = ({countriesToShow}) => {
-    if(countriesToShow.length === 1){
-        return(
-            <div><CountryData country={countriesToShow[0]}/></div>
+    const handleClick = () => {
+        setShowSingular(!showSingular)
+    }
+
+    return(
+        <div>
+            {country.name.common}<button onClick={handleClick}>show</button>
+            {showSingular ? (<CountryData country={country} />) : (null)}
+        </div>
+    )
+
+}
+
+const Countries = ({ countriesToShow }) => {
+    if (countriesToShow.length === 1) {
+        return (
+            <div><CountryData country={countriesToShow[0]} /></div>
         )
     }
 
-    if(countriesToShow.length <= 10){
-        return(
+    if (countriesToShow.length <= 10) {
+        return (
             <div>
                 {countriesToShow.map(country => {
                     return (
-                        <Country country={country}/>
+                        <Country country={country} />
                     )
                 })}
             </div>
         )
     }
 
-    
 
-    return(
+
+    return (
         <div>Too many matches, specify another filter</div>
     )
 }
