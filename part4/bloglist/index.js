@@ -2,6 +2,10 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
+require('dotenv').config()
+
+mongoose.set('strictQuery', false)
+const url = process.env.MONGODB_URI
 
 const blogSchema = new mongoose.Schema({
   title: String,
@@ -10,10 +14,23 @@ const blogSchema = new mongoose.Schema({
   likes: Number
 })
 
+blogSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+      returnedObject.id = returnedObject._id.toString()
+      delete returnedObject._id
+      delete returnedObject.__v
+    }
+  })
+
 const Blog = mongoose.model('Blog', blogSchema)
 
-const mongoUrl = 'mongodb+srv://gaugust2:fsopart4@cluster0.doww72f.mongodb.net/bloglist?retryWrites=true&w=majority'
-mongoose.connect(mongoUrl)
+mongoose.connect(url)
+  .then(() => {
+    console.log('connected to MongoDB')
+  })
+  .catch((error) => {
+    console.log('error connecting to MongoDB:', error.message)
+  })
 
 app.use(cors())
 app.use(express.json())
