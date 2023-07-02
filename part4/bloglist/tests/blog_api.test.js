@@ -48,3 +48,26 @@ test('a valid blog can be added', async () => {
         'test test2'
       )
 })
+
+test('check if "likes" property defaults to 0', async () => {
+    const response1 = await api.get('/api/blogs')
+    const initialLength = response1.body.length
+
+    const blog = {
+        title:'title_test2',
+        author:'test test2 test3',
+        url:'test.com',
+    }
+
+    await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const lastIndex = response.body.length - 1
+
+    expect(response.body).toHaveLength(initialLength + 1)
+    expect(response.body[lastIndex].likes).toBe(0)
+})
