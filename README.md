@@ -1,1 +1,1 @@
-# full-stack-open-2023
+# full-stack-open-2024
